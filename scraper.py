@@ -27,24 +27,23 @@ def pad(s):
 	else:
 		return "00"
 
-def fetchMOP(id):
+def fetchMOP(id): # Sækja grunngögn um þingmann
 	page = requests.get("https://www.althingi.is/altext/cv/?nfaerslunr=" + str(id))
 	soup = BS(page.text, "html.parser")
 	els = soup.select("td p")
 
-	if len(els) > 0:
-		res_name = soup.h1.text
-		text = els[0].text
-		reBirthDeath = re.compile(r"(Fædd[u]?).*? ([0-9]{1,2}). (.*?) ([0-9]{4}), dáin[n]? ([0-9]{1,2}). (.*?) ([0-9]{4})")
-		reBirth = re.compile(r"(Fædd[u]?).*? ([0-9]{1,2}). (.*?) ([0-9]{4})")
+	if len(els) > 0: # Þingmaður er á skrá
+		res_name = soup.h1.text.strip()
+		text = els[0].text.replace("(", "").replace(")", "")
+		reBirthDeath = re.compile(r"(Fædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}), dáin[n]? ([0-9]{1,2}). (.*?) ([0-9]{4})")
+		reBirth = re.compile(r"(Fædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4})")
 
-		grps = reBirthDeath.match(text).groups()
-		
-		if len(grps) == 0:
+		if reBirthDeath.match(text):
+			grps = reBirthDeath.match(text).groups()
+		elif reBirth.match(text): # RegEx finnur ekki bæði fæðingar- og dauðadag, leitar að bara fæðingardegi
 			grps = reBirth.match(text).groups()
-
-			if len(grps) == 0:
-				return None
+		else:
+			return None
 		
 		res_birth = grps[3] + "-" + getMonth(grps[2]) + "-" + pad(grps[1])
 		if len(grps[0]) == 4:
@@ -52,8 +51,16 @@ def fetchMOP(id):
 		else:
 			res_gender = 'kk'
 
-		return (res_name, res_gender, res_birth)
+		if len(grps) > 4:
+			res_death = grps[6] + "-" + getMonth(grps[5]) + "-" + pad(grps[4])
+			return (res_name, res_gender, res_birth, res_death)
+		else:
+			return (res_name, res_gender, res_birth)
 	else:
 		return None
 
-print(fetchMOP(61))
+for i in range(1, 10):
+	print(i)
+	res = fetchMOP(i)
+	if res != None:
+		print(res)
