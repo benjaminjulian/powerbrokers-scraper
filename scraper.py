@@ -150,7 +150,7 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 	else:
 		return None
 
-for i in range(1, 10):
+for i in range(1, 100):
 	print(i)
 	res = fetchMOP(i)
 	if res != None:
