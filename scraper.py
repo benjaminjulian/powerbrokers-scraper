@@ -38,15 +38,15 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 		res_name = soup.h1.text.strip()
 		fulltext = ""
 		for elmt in els:
-			fulltext += elmt.text + " "
+			fulltext += elmt.text + " ::: "
 		text = fulltext.replace("(", "").replace(")", "")
 		reBirthDeath = re.compile(r".*?(Fædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}), dáin[n]? ([0-9]{1,2}). (.*?) ([0-9]{4})")
 		reBirth = re.compile(r".*?(Fædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4})")
-		reParty = re.compile(r".*?[Aa]lþingismaður .*? \((.*?flokkur.*?)\)")
-		reParents = re.compile(r".*?[Ff]oreldrar:(.*?)([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}), dáin[n]? ([0-9]{1,2}). (.*?) ([0-9]{4}).*? og .*? ((?:[\p{Lu}].*? ){1,4}).*?([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}), dáin[n]? ([0-9]{1,2}). (.*?) ([0-9]{4})")
-		reParentsFirstAlive = re.compile(r".*?[Ff]oreldrar:(.*?)([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}).*? og.*?((?:[\p{Lu}].*? ){1,4}).*?([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}), dáin[n]? ([0-9]{1,2}). (.*?) ([0-9]{4})")
-		reParentsSecondAlive = re.compile(r".*?[Ff]oreldrar:(.*?)([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}), dáin[n]? ([0-9]{1,2}). (.*?) ([0-9]{4}).*? og.*?((?:[\p{Lu}].*? ){1,4}).*?([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4})")
-		reParentsBothAlive = re.compile(r".*?[Ff]oreldrar:(.*?)([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}).*? og.*?((?:[\p{Lu}].*? ){1,4}).*?([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4})")
+		reParty = re.compile(r".*?(?:Alþingismaður|Varaþingmaður) .*? \((.*?flokkur.*?)\)")
+		reParents = re.compile(r".*?[Ff]oreldrar:(.*?)([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}), dáin[n]? ([0-9]{1,2}). (.*?) ([0-9]{4}).*? og .*? ([AÁBCDEFGHIÍJKLMNOÓPQRSTUÚVWXYÝZÞÆÖ].*?) ([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}), dáin[n]? ([0-9]{1,2}). (.*?) ([0-9]{4})")
+		reParentsFirstAlive = re.compile(r".*?[Ff]oreldrar:(.*?)([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}).*? og.*?([AÁBCDEFGHIÍJKLMNOÓPQRSTUÚVWXYÝZÞÆÖ].*?) ([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}), dáin[n]? ([0-9]{1,2}). (.*?) ([0-9]{4})")
+		reParentsSecondAlive = re.compile(r".*?[Ff]oreldrar:(.*?)([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}), dáin[n]? ([0-9]{1,2}). (.*?) ([0-9]{4}).*? og.*?([AÁBCDEFGHIÍJKLMNOÓPQRSTUÚVWXYÝZÞÆÖ].*?) ([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4})")
+		reParentsBothAlive = re.compile(r".*?[Ff]oreldrar:(.*?)([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}).*? og.*?([AÁBCDEFGHIÍJKLMNOÓPQRSTUÚVWXYÝZÞÆÖ].*?) ([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4})")
 
 		print("Grunntékk á #" + str(id) + "        ", end="\r")
 		if reBirthDeath.match(text):
@@ -86,7 +86,7 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 			else:
 				res_parent1_gender = "m"
 
-			if len(grps[10]) == 4:
+			if len(grps[9]) == 4:
 				res_parent2_gender = "f"
 			else:
 				res_parent2_gender = "m"
@@ -94,8 +94,8 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 			res_parent1_birth = grps[4] + "-" + getMonth(grps[3]) + "-" + pad(grps[2])
 			res_parent1_death = grps[7] + "-" + getMonth(grps[6]) + "-" + pad(grps[5])
 			res_parent1_name = grps[0].strip()
-			res_parent2_birth = grps[13] + "-" + getMonth(grps[12]) + "-" + pad(grps[11])
-			res_parent2_death = grps[16] + "-" + getMonth(grps[15]) + "-" + pad(grps[14])
+			res_parent2_birth = grps[12] + "-" + getMonth(grps[11]) + "-" + pad(grps[10])
+			res_parent2_death = grps[15] + "-" + getMonth(grps[14]) + "-" + pad(grps[13])
 			res_parent2_name = grps[8].strip()
 
 			return ((res_name, res_gender, res_birth, res_death, res_party), (res_parent1_name, res_parent1_gender, res_parent1_birth, res_parent1_death), (res_parent2_name, res_parent2_gender, res_parent2_birth, res_parent2_death))
@@ -108,7 +108,7 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 			else:
 				res_parent1_gender = "m"
 
-			if len(grps[10]) == 4:
+			if len(grps[6]) == 4:
 				res_parent2_gender = "f"
 			else:
 				res_parent2_gender = "m"
@@ -116,8 +116,8 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 			res_parent1_birth = grps[4] + "-" + getMonth(grps[3]) + "-" + pad(grps[2])
 			res_parent1_death = "1000-01-01"
 			res_parent1_name = grps[0].strip()
-			res_parent2_birth = grps[10] + "-" + getMonth(grps[9]) + "-" + pad(grps[8])
-			res_parent2_death = grps[13] + "-" + getMonth(grps[12]) + "-" + pad(grps[11])
+			res_parent2_birth = grps[9] + "-" + getMonth(grps[8]) + "-" + pad(grps[7])
+			res_parent2_death = grps[12] + "-" + getMonth(grps[11]) + "-" + pad(grps[10])
 			res_parent2_name = grps[5].strip()
 
 			return ((res_name, res_gender, res_birth, res_death, res_party), (res_parent1_name, res_parent1_gender, res_parent1_birth, res_parent1_death), (res_parent2_name, res_parent2_gender, res_parent2_birth, res_parent2_death))
@@ -130,7 +130,7 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 			else:
 				res_parent1_gender = "m"
 
-			if len(grps[10]) == 4:
+			if len(grps[9]) == 4:
 				res_parent2_gender = "f"
 			else:
 				res_parent2_gender = "m"
@@ -138,7 +138,7 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 			res_parent1_birth = grps[4] + "-" + getMonth(grps[3]) + "-" + pad(grps[2])
 			res_parent1_death = grps[7] + "-" + getMonth(grps[6]) + "-" + pad(grps[5])
 			res_parent1_name = grps[0].strip()
-			res_parent2_birth = grps[13] + "-" + getMonth(grps[12]) + "-" + pad(grps[11])
+			res_parent2_birth = grps[12] + "-" + getMonth(grps[11]) + "-" + pad(grps[10])
 			res_parent2_death = "1000-01-01"
 			res_parent2_name = grps[8].strip()
 
@@ -152,7 +152,7 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 			else:
 				res_parent1_gender = "m"
 
-			if len(grps[10]) == 4:
+			if len(grps[6]) == 4:
 				res_parent2_gender = "f"
 			else:
 				res_parent2_gender = "m"
@@ -160,7 +160,7 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 			res_parent1_birth = grps[4] + "-" + getMonth(grps[3]) + "-" + pad(grps[2])
 			res_parent1_death = "1000-01-01"
 			res_parent1_name = grps[0].strip()
-			res_parent2_birth = grps[10] + "-" + getMonth(grps[9]) + "-" + pad(grps[8])
+			res_parent2_birth = grps[9] + "-" + getMonth(grps[8]) + "-" + pad(grps[7])
 			res_parent2_death = "1000-01-01"
 			res_parent2_name = grps[5].strip()
 
@@ -170,5 +170,8 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 			return (res_name, res_gender, res_birth, res_death, res_party)
 	else:
 		return None
-
-print(fetchMOP(4))
+for i in range(1,10):
+	print(fetchMOP(i))
+	print("--")
+	print("--")
+	print("--")
