@@ -5,17 +5,32 @@ import re
 def getMonth(m):
 	return {
 		'janúar' : '01',
+		'jan.' : '01',
 		'febrúar' : '02',
+		'feb.' : '02',
 		'mars' : '03',
+		'mar.' : '03',
 		'apríl' : '04',
+		'apr.' : '04',
 		'maí' : '05',
 		'júní' : '06',
+		'jún.' : '06',
 		'júlí' : '07',
+		'júl.' : '07',
+		'júlí júní' : '06',
 		'ágúst' : '08',
+		'ág.' : '08',
+		'ágú.' : '08',
 		'september' : '09',
+		'sep.' : '09',
+		'sept.' : '09',
 		'október' : '10',
+		'okt.' : '10',
 		'nóvember' : '11',
-		'desember' : '12'
+		'nóv.' : '11',
+		'desember' : '12',
+		'des.' : '12',
+		'desembre' : '12'
 	}[m]
 
 def pad(s):
@@ -28,9 +43,7 @@ def pad(s):
 		return "00"
 
 def fetchMOP(id): # Sækja grunngögn um þingmann
-	print("Sæki #" + str(id) + "      ", end="\r")
 	page = requests.get("https://www.althingi.is/altext/cv/?nfaerslunr=" + str(id))
-	print("Síða #" + str(id) + " sótt       ", end="\r")
 	soup = BS(page.text, "html.parser")
 	els = soup.select("p")
 
@@ -48,7 +61,6 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 		reParentsSecondAlive = re.compile(r".*?[Ff]oreldrar:(.*?)([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}), dáin[n]? ([0-9]{1,2}). (.*?) ([0-9]{4}).*? og.*?([AÁBCDEFGHIÍJKLMNOÓPQRSTUÚVWXYÝZÞÆÖ].*?) ([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4})")
 		reParentsBothAlive = re.compile(r".*?[Ff]oreldrar:(.*?)([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4}).*? og.*?([AÁBCDEFGHIÍJKLMNOÓPQRSTUÚVWXYÝZÞÆÖ].*?) ([Ff]ædd[u]?).{0,40}? ([0-9]{1,2})\. (.{1,10}) ([0-9]{4})")
 
-		print("Grunntékk á #" + str(id) + "        ", end="\r")
 		if reBirthDeath.match(text):
 			grps = reBirthDeath.match(text).groups()
 		elif reBirth.match(text): # RegEx finnur ekki bæði fæðingar- og dauðadag, leitar að bara fæðingardegi
@@ -75,10 +87,7 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 				res_party = grps[0]
 		else:
 			res_party = ""
-		print("Foreldratékk á #" + str(id) + "        ", end="\r")
-		print(text)
 		if reParents.match(text):
-			print("Báðir foreldrar #" + str(id) + " látnir        ", end="\r")
 			grps = reParents.match(text).groups()
 
 			if len(grps[1]) == 4:
@@ -100,7 +109,6 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 
 			return ((res_name, res_gender, res_birth, res_death, res_party), (res_parent1_name, res_parent1_gender, res_parent1_birth, res_parent1_death), (res_parent2_name, res_parent2_gender, res_parent2_birth, res_parent2_death))
 		elif reParentsFirstAlive.match(text):
-			print("Annað foreldri #" + str(id) + " lifandi        ", end="\r")
 			grps = reParentsFirstAlive.match(text).groups()
 
 			if len(grps[1]) == 4:
@@ -122,7 +130,6 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 
 			return ((res_name, res_gender, res_birth, res_death, res_party), (res_parent1_name, res_parent1_gender, res_parent1_birth, res_parent1_death), (res_parent2_name, res_parent2_gender, res_parent2_birth, res_parent2_death))
 		elif reParentsSecondAlive.match(text):
-			print("Annað foreldri #" + str(id) + " lifandi        ", end="\r")
 			grps = reParentsSecondAlive.match(text).groups()
 
 			if len(grps[1]) == 4:
@@ -144,7 +151,6 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 
 			return ((res_name, res_gender, res_birth, res_death, res_party), (res_parent1_name, res_parent1_gender, res_parent1_birth, res_parent1_death), (res_parent2_name, res_parent2_gender, res_parent2_birth, res_parent2_death))
 		elif reParentsBothAlive.match(text):
-			print("Bæði foreldri #" + str(id) + " lifandi        ", end="\r")
 			grps = reParentsBothAlive.match(text).groups()
 
 			if len(grps[1]) == 4:
@@ -166,12 +172,8 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 
 			return ((res_name, res_gender, res_birth, res_death, res_party), (res_parent1_name, res_parent1_gender, res_parent1_birth, res_parent1_death), (res_parent2_name, res_parent2_gender, res_parent2_birth, res_parent2_death))
 		else:
-			print("Engar foreldraupplýsingar hjá #" + str(id) + "     ", end="\r")
-			return (res_name, res_gender, res_birth, res_death, res_party)
+			return ((res_name, res_gender, res_birth, res_death, res_party), (), ())
 	else:
 		return None
-for i in range(1,10):
-	print(fetchMOP(i))
-	print("--")
-	print("--")
-	print("--")
+
+print(fetchMOP(381))
