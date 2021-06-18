@@ -175,5 +175,3 @@ def fetchMOP(id): # Sækja grunngögn um þingmann
 			return ((res_name, res_gender, res_birth, res_death, res_party), (), ())
 	else:
 		return None
-
-print(fetchMOP(381))
